@@ -6,36 +6,58 @@ export const SITE_DATA: ProfileData = {
   role: "Learning AI & Machine Learning",
 
   bio: `Belajar Machine Learning & AI
-  Dari dasar sampai bisa  
+  Dari dasar sampai bisa
   Materi praktis | Project real | E-Course`,
 
   avatarUrl: vintecLogo,
-  theme: "light",
+  theme: "dark",
+
+  tabName: "vintec.pkl",
+  taglines: ["MATERI PRAKTIS", "PROJECT REAL", "E-COURSE"],
+
+  visitor: {
+    namespace: "vintec-tech",
+    key: "site",
+    fallback: 3043,
+  },
+
+  prompt: "mau belajar apa hari ini?",
+  accuracyLabel: "nah gitu dong",
+  accuracyValue: 80,
 
   links: [
     {
-      id: "2",
-      title: "Lynk.id",
+      id: "1",
+      title: "E-Course di Lynk.id",
+      subtitle: "koleksi belajar vintec",
+      badge: "PALING LARIS 🔥",
       url: "https://lynk.id/bantucoding",
       icon: "lynkid",
-      variant: "green",
-    },
-          {
-      id: "1",
-      title: "Shopee",
-      url: "https://shopee.co.id/shop/1725090121",
-      icon: "shopee",
-      variant: "orange",
       highlighted: true,
     },
     {
-      id: "4",
-      title: "Vintec AI Public Group",
-      url: "https://chat.whatsapp.com/ITETy5Vri8F5d7nUVytby0",
+      id: "2",
+      title: "Belanja di Shopee",
+      subtitle: "di toko oren juga ada",
+      url: "https://shopee.co.id/shop/1725090121",
+      icon: "shopee",
+    },
+    {
+      id: "3",
+      title: "Join Grup Whatsapp Base 2",
+      subtitle: "komunitas AI · gratis",
+      url: "https://chat.whatsapp.com/BpvjYj5o8ne5ZjjPtHu7rc",
       icon: "whatsapp",
-      variant: "light-green",
+    },
+    {
+      id: "4",
+      title: "Chat WhatsApp Vintec",
+      subtitle: "mentok tugas ML/DL? serahin ke vintec",
+      url: "https://wa.me/6285947094014",
+      icon: "whatsapp",
     },
   ],
+
   socials: [
     {
       platform: "instagram",

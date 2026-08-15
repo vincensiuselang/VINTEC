@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+    <meta name="theme-color" content="#060d16">
+    <link rel="icon" type="image/jpeg" href="/logovintec2.jpg">
+
     <!-- Primary Meta Tags -->
     <title>Vintec | AI & Tech Education - Learn Machine Learning & AI</title>
     <meta name="title" content="Vintec | AI & Tech Education - Learn Machine Learning & AI">
@@ -52,13 +54,18 @@
                         'scroll-code': {
                             '0%': { transform: 'translateY(0)' },
                             '100%': { transform: 'translateY(-50%)' }
+                        },
+                        'float': {
+                            '0%, 100%': { transform: 'translateY(0) rotate(0deg)' },
+                            '50%': { transform: 'translateY(-18px) rotate(4deg)' }
                         }
                     },
                     animation: {
                         'glow-pulse': 'glow-pulse 4s ease-in-out infinite',
                         'shimmer': 'shimmer 2.5s infinite linear',
                         'active-glow': 'border-glow 1s ease-in-out infinite',
-                        'scroll-code': 'scroll-code 40s linear infinite'
+                        'scroll-code': 'scroll-code 40s linear infinite',
+                        'float': 'float 9s ease-in-out infinite'
                     }
                 }
             }
@@ -121,18 +128,13 @@
             mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
             -webkit-mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
         }
+        .font-mono, code, kbd {
+            font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+        }
     </style>
-<script type="importmap">
-{
-  "imports": {
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "react": "https://esm.sh/react@^19.2.3",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/"
-  }
-}
-</script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
-<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-white selection:bg-blue-500/30 transition-colors duration-500 overflow-x-hidden">
+<body class="bg-[#060d16] text-white selection:bg-blue-500/30 overflow-x-hidden">
     <div id="root"></div>
 <script type="module" src="/index.tsx"></script>
 </body>
