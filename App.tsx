@@ -7,6 +7,7 @@ import VisitorCounter from "./src/components/VisitorCounter";
 import { SITE_DATA } from "./constants";
 import { ProfileData } from "./types";
 import vintecLogo from "/public/logovintec2.jpg";
+import { trackView } from "./src/lib/track";
 
 const WindowBar: React.FC<{ tabName: string; visitor: ProfileData["visitor"] }> = ({
   tabName,
@@ -40,28 +41,103 @@ const WindowBar: React.FC<{ tabName: string; visitor: ProfileData["visitor"] }> 
   </header>
 );
 
-const AccuracyBar: React.FC<{ label: string; value: number }> = ({ label, value }) => {
-  const [width, setWidth] = useState(0);
+/**
+ * Bar accuracy yang bisa digeser kiri-kanan.
+ * Pakai <input type="range"> transparan di atas bar custom, jadi drag di HP,
+ * klik di laptop, dan tombol panah di keyboard semuanya jalan tanpa library.
+ */
+const AccuracyBar: React.FC<{
+  levels: ProfileData["accuracyLevels"];
+  initial: number;
+}> = ({ levels, initial }) => {
+  const [value, setValue] = useState(0);
+  const [dragging, setDragging] = useState(false);
+  const [touched, setTouched] = useState(false);
 
+  // animasi awal: bar keisi dari 0 ke nilai awal
   useEffect(() => {
-    const t = setTimeout(() => setWidth(value), 300);
+    const t = setTimeout(() => setValue(initial), 300);
     return () => clearTimeout(t);
-  }, [value]);
+  }, [initial]);
+
+  const label =
+    [...levels].reverse().find((l) => value >= l.min)?.label ?? levels[0]?.label ?? "";
+
+  // pas lagi digeser, transisi dimatiin biar bar nempel ke jari, gak telat
+  const motion = dragging
+    ? "transition-none"
+    : "transition-all duration-700 ease-out motion-reduce:transition-none";
+
+  const startDrag = () => {
+    setDragging(true);
+    setTouched(true);
+  };
+  const stopDrag = () => setDragging(false);
 
   return (
-    <div className="mt-8 w-full">
+    <div className="mt-8 w-full select-none">
       <div className="flex items-end justify-between gap-4 font-mono text-xs text-slate-500 sm:text-sm">
         <span className="truncate">
-          accuracy <span className="text-slate-600">//</span> {label} 🔥
+          accuracy <span className="text-slate-600">//</span>{" "}
+          <span key={label} className="inline-block animate-label-in text-slate-300">
+            {label}
+          </span>
         </span>
-        <span className="shrink-0 text-lg font-bold text-blue-400 sm:text-xl">{value}%</span>
+        <span className="shrink-0 text-lg font-bold tabular-nums text-blue-400 sm:text-xl">
+          {value}%
+        </span>
       </div>
-      <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-white/[0.06]">
-        <div
-          className="h-full rounded-full bg-gradient-to-r from-blue-500 to-emerald-400 transition-[width] duration-1000 ease-out"
-          style={{ width: `${width}%` }}
+
+      <div className="relative mt-3 flex h-6 items-center">
+        {/* track + isi */}
+        <div className="absolute inset-x-0 h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
+          <div
+            className={`h-full rounded-full bg-gradient-to-r from-blue-500 to-emerald-400 ${motion}`}
+            style={{ width: `${value}%` }}
+          />
+        </div>
+
+        {/* input asli: gak keliatan, tapi dia yang nangkep drag/klik/keyboard */}
+        <input
+          type="range"
+          min={0}
+          max={100}
+          step={1}
+          value={value}
+          onChange={(e) => {
+            setValue(Number(e.target.value));
+            setTouched(true);
+          }}
+          onPointerDown={startDrag}
+          onPointerUp={stopDrag}
+          onPointerCancel={stopDrag}
+          onBlur={stopDrag}
+          aria-label="geser accuracy"
+          aria-valuetext={`${value}% — ${label}`}
+          className="peer absolute inset-0 z-10 h-full w-full cursor-grab opacity-0 active:cursor-grabbing"
+        />
+
+        {/* jempol / handle */}
+        <span
+          className={[
+            "pointer-events-none absolute h-4 w-4 -translate-x-1/2 rounded-full border-2 border-emerald-300 bg-[#060d16]",
+            "shadow-[0_0_12px_rgba(52,211,153,0.7)] ring-0 ring-emerald-400/40 peer-focus-visible:ring-4",
+            dragging ? "scale-125" : "scale-100",
+            motion,
+          ].join(" ")}
+          style={{ left: `${value}%` }}
         />
       </div>
+
+      <p
+        className={[
+          "mt-2 text-center font-mono text-[10px] text-slate-600 transition-opacity duration-500 sm:text-xs",
+          touched ? "opacity-0" : "opacity-100",
+        ].join(" ")}
+        aria-hidden="true"
+      >
+        ← geser →
+      </p>
     </div>
   );
 };
@@ -71,6 +147,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     document.documentElement.classList.add("dark");
+    trackView();
   }, []);
 
   return (
@@ -87,7 +164,7 @@ const App: React.FC = () => {
             <CommandPalette prompt={data.prompt} items={data.links} />
           </div>
 
-          <AccuracyBar label={data.accuracyLabel} value={data.accuracyValue} />
+          <AccuracyBar levels={data.accuracyLevels} initial={data.accuracyValue} />
 
           <SocialIcons socials={data.socials} />
 
