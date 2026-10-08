@@ -3,8 +3,10 @@ export interface LinkItem {
   title: string;
   subtitle?: string;
   badge?: string;
+  /** warna badge: "orange" (default, kayak PALING LARIS) atau "cyan" (warna Vintec Learn) */
+  badgeTone?: 'orange' | 'cyan';
   url: string;
-  icon?: 'lynkid' | 'shopee' | 'whatsapp';
+  icon?: 'lynkid' | 'shopee' | 'whatsapp' | 'vinteclearning';
   highlighted?: boolean;
 }
 
@@ -29,9 +31,13 @@ export interface ProfileData {
   avatarUrl: string;
   /** teks di header command palette */
   prompt: string;
-  /** label di bawah palette, contoh: "nah gitu dong" */
-  accuracyLabel: string;
-  /** 0 - 100 */
+  /**
+   * Keterangan bar accuracy yang bisa digeser.
+   * Label yang dipakai = level terakhir yang `min`-nya <= nilai sekarang.
+   * Urutkan dari `min` paling kecil ke paling besar.
+   */
+  accuracyLevels: { min: number; label: string }[];
+  /** posisi awal bar, 0 - 100 */
   accuracyValue: number;
   /** nama tab di window bar */
   tabName: string;

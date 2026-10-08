@@ -1,0 +1,5 @@
+# vintec.tech (Hostinger / Apache)
+# Bikin vintec.tech/admin kebuka tanpa harus ngetik admin.html
+Options -MultiViews
+RewriteEngine On
+RewriteRule ^admin/?$ admin.html [L]

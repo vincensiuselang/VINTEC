@@ -22,8 +22,18 @@ export const SITE_DATA: ProfileData = {
   },
 
   prompt: "mau belajar apa hari ini?",
-  accuracyLabel: "nah gitu dong",
   accuracyValue: 80,
+  accuracyLevels: [
+    { min: 0, label: "model belum di-train" },
+    { min: 10, label: "underfitting parah" },
+    { min: 25, label: "loss mulai turun dikit" },
+    { min: 40, label: "masih tebak-tebakan" },
+    { min: 55, label: "mulai nangkep pola" },
+    { min: 70, label: "nah gitu dong" },
+    { min: 85, label: "siap deploy" },
+    { min: 95, label: "awas overfitting" },
+    { min: 100, label: "curiga data leakage" },
+  ],
 
   links: [
     {
@@ -50,11 +60,14 @@ export const SITE_DATA: ProfileData = {
       icon: "whatsapp",
     },
     {
-      id: "4",
-      title: "Chat WhatsApp Vintec",
-      subtitle: "mentok tugas ML/DL? serahin ke vintec",
-      url: "https://wa.me/6285947094014",
-      icon: "whatsapp",
+      // id baru (bukan "4") biar statistik klik link lama gak kecampur di /admin
+      id: "5",
+      title: "Belajar di Vintec Learn",
+      badge: "TEMPAT BELAJAR",
+      badgeTone: "cyan",
+      subtitle: "materi, notebook & project",
+      url: "https://vinteclearning.com",
+      icon: "vinteclearning",
     },
   ],
 

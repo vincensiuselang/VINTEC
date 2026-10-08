@@ -28,6 +28,59 @@
     <meta property="twitter:description" content="Learn Machine Learning from zero to professional. Project-based AI modules and e-courses.">
     <meta property="twitter:image" content="https://i.ibb.co/v4S8W8G/vintec-logo.png">
 
+    <!--
+      Catat kunjungan SECEPAT MUNGKIN, sebelum Tailwind & bundle JS didownload.
+      Kalau nunggu React kelar, pengunjung yang buka terus langsung balik (umum dari TikTok)
+      gak bakal kehitung. Logikanya sama persis kayak src/lib/track.ts (key storage juga sama).
+    -->
+    <script>
+      (function () {
+        var URL = "%VITE_SUPABASE_URL%", KEY = "%VITE_SUPABASE_ANON_KEY%";
+        if (!URL || URL.charAt(0) === "%" || !KEY || KEY.charAt(0) === "%") return;
+        function get(s, k) { try { return window[s].getItem(k); } catch (e) { return null; } }
+        function set(s, k, v) { try { window[s].setItem(k, v); } catch (e) {} }
+        function id() { try { return crypto.randomUUID(); } catch (e) { return Math.random().toString(36).slice(2) + Date.now().toString(36); } }
+        function keep(s, k) { var v = get(s, k); if (!v) { v = id(); set(s, k, v); } return v; }
+        if (get("localStorage", "vintec_ignore_me") === "1") { window.__vintecView = true; return; }
+
+        var ua = navigator.userAgent, ref = document.referrer, src = get("sessionStorage", "vintec_src");
+        if (!src) {
+          var utm = new URLSearchParams(location.search).get("utm_source");
+          if (utm) src = utm.toLowerCase().slice(0, 40);
+          else if (/musical_ly|Bytedance|TikTok/i.test(ua)) src = "tiktok";
+          else if (/Instagram/i.test(ua)) src = "instagram";
+          else if (/FBAN|FBAV|FB_IAB/i.test(ua)) src = "facebook";
+          else if (/WhatsApp/i.test(ua)) src = "whatsapp";
+          else if (ref) {
+            try {
+              var h = new window.URL(ref).hostname.replace(/^www\.|^m\.|^l\./, "");
+              src = h === location.hostname ? "langsung"
+                : /tiktok/.test(h) ? "tiktok" : /instagram/.test(h) ? "instagram"
+                : /facebook/.test(h) ? "facebook" : (/youtube/.test(h) || h === "youtu.be") ? "youtube"
+                : /google/.test(h) ? "google" : /whatsapp/.test(h) ? "whatsapp" : h.slice(0, 40);
+            } catch (e) { src = "langsung"; }
+          } else src = "langsung";
+          set("sessionStorage", "vintec_src", src);
+        }
+
+        var body = JSON.stringify({
+          type: "view",
+          visitor_id: keep("localStorage", "vintec_vid"),
+          session_id: keep("sessionStorage", "vintec_sid"),
+          source: src,
+          referrer: ref ? ref.slice(0, 300) : null,
+          device: /iPad|Tablet/i.test(ua) ? "tablet" : /Mobi|Android|iPhone/i.test(ua) ? "mobile" : "desktop",
+          path: location.pathname.slice(0, 200)
+        });
+        try {
+          fetch(URL + "/rest/v1/events", {
+            method: "POST", keepalive: true, body: body,
+            headers: { apikey: KEY, Authorization: "Bearer " + KEY, "Content-Type": "application/json", Prefer: "return=minimal" }
+          }).catch(function () {});
+          window.__vintecView = true;
+        } catch (e) {}
+      })();
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -58,6 +111,10 @@
                         'float': {
                             '0%, 100%': { transform: 'translateY(0) rotate(0deg)' },
                             '50%': { transform: 'translateY(-18px) rotate(4deg)' }
+                        },
+                        'label-in': {
+                            '0%': { opacity: '0', transform: 'translateY(4px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
                         }
                     },
                     animation: {
@@ -65,7 +122,8 @@
                         'shimmer': 'shimmer 2.5s infinite linear',
                         'active-glow': 'border-glow 1s ease-in-out infinite',
                         'scroll-code': 'scroll-code 40s linear infinite',
-                        'float': 'float 9s ease-in-out infinite'
+                        'float': 'float 4.5s ease-in-out infinite',
+                        'label-in': 'label-in 0.25s ease-out'
                     }
                 }
             }

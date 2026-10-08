@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { LinkItem } from "../../types";
+import { trackClick } from "../lib/track";
 import lynkIdLogo from "/public/lynkidlogo.png";
 import shopeeLogo from "/public/shopee-seeklogo.png";
 
@@ -14,6 +15,15 @@ const ItemIcon: React.FC<{ icon?: LinkItem["icon"] }> = ({ icon }) => {
     return (
       <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#25D366] shadow-lg shadow-emerald-500/20 sm:h-14 sm:w-14">
         <WhatsappGlyph />
+      </div>
+    );
+  }
+
+  if (icon === "vinteclearning") {
+    // logo Vintec Learn udah punya kotak gelap sendiri, jadi tampil full tanpa latar putih
+    return (
+      <div className="h-12 w-12 shrink-0 overflow-hidden rounded-2xl shadow-lg shadow-blue-500/20 ring-1 ring-white/15 sm:h-14 sm:w-14">
+        <img src="/vinteclearning.svg" alt="" className="h-full w-full object-cover" />
       </div>
     );
   }
@@ -33,15 +43,25 @@ interface Props {
 
 const CommandPalette: React.FC<Props> = ({ prompt, items }) => {
   const [active, setActive] = useState(0);
+  // dropdown: default kebuka, biar link jualan langsung keliatan
+  const [expanded, setExpanded] = useState(true);
   const rowRefs = useRef<Array<HTMLAnchorElement | null>>([]);
 
   const open = (index: number) => {
     const item = items[index];
-    if (item) window.open(item.url, "_blank", "noopener,noreferrer");
+    if (!item) return;
+    trackClick(item.id, item.title);
+    window.open(item.url, "_blank", "noopener,noreferrer");
   };
 
   useEffect(() => {
+    if (!expanded) return;
+
     const onKey = (e: KeyboardEvent) => {
+      // jangan bajak tombol kalau user lagi di tombol header / slider / input lain
+      const target = e.target as HTMLElement | null;
+      if (target?.closest("button, input, textarea, select")) return;
+
       if (e.key === "ArrowDown") {
         e.preventDefault();
         setActive((i) => (i + 1) % items.length);
@@ -55,20 +75,49 @@ const CommandPalette: React.FC<Props> = ({ prompt, items }) => {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [active, items]);
+  }, [active, items, expanded]);
 
   useEffect(() => {
-    rowRefs.current[active]?.focus({ preventScroll: true });
-  }, [active]);
+    if (expanded) rowRefs.current[active]?.focus({ preventScroll: true });
+  }, [active, expanded]);
 
   return (
     <div className="w-full overflow-hidden rounded-3xl border border-white/10 bg-[#0b1622]/85 shadow-2xl shadow-black/50 backdrop-blur-xl">
-      {/* header */}
-      <div className="flex items-center gap-3 px-6 py-5 sm:px-8 sm:py-6">
-        <span className="text-[10px] text-blue-400">▼</span>
-        <span className="truncate font-mono text-base text-slate-200 sm:text-2xl">{prompt}</span>
-      </div>
+      {/* header = tombol buka/tutup dropdown */}
+      <button
+        type="button"
+        onClick={() => setExpanded((v) => !v)}
+        aria-expanded={expanded}
+        aria-controls="palette-list"
+        className="group flex w-full items-center gap-3 px-6 py-5 text-left outline-none transition-colors hover:bg-white/[0.02] focus-visible:bg-white/[0.04] sm:px-8 sm:py-6"
+      >
+        <span
+          className={[
+            "text-[10px] text-blue-400 transition-transform duration-300 motion-reduce:transition-none",
+            expanded ? "rotate-0" : "-rotate-90",
+          ].join(" ")}
+        >
+          ▼
+        </span>
+        <span className="min-w-0 flex-1 truncate font-mono text-base text-slate-200 sm:text-2xl">
+          {prompt}
+        </span>
+        {/* jumlah link cuma muncul pas ketutup & di layar lebar, biar prompt gak kepotong di HP */}
+        {!expanded && (
+          <span className="hidden shrink-0 font-mono text-sm text-slate-500 sm:inline">
+            {items.length} link
+          </span>
+        )}
+      </button>
 
+      {/* isi dropdown — animasi tinggi pakai trik grid 0fr → 1fr */}
+      <div
+        id="palette-list"
+        aria-hidden={!expanded}
+        className="grid transition-[grid-template-rows] duration-300 ease-out motion-reduce:transition-none"
+        style={{ gridTemplateRows: expanded ? "1fr" : "0fr" }}
+      >
+      <div className="min-h-0 overflow-hidden">
       <div className="h-px w-full bg-white/10" />
 
       {/* rows */}
@@ -80,8 +129,10 @@ const CommandPalette: React.FC<Props> = ({ prompt, items }) => {
               key={item.id}
               ref={(el) => (rowRefs.current[i] = el)}
               href={item.url}
+              tabIndex={expanded ? 0 : -1}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => trackClick(item.id, item.title)}
               onMouseEnter={() => setActive(i)}
               onFocus={() => setActive(i)}
               className={[
@@ -105,7 +156,14 @@ const CommandPalette: React.FC<Props> = ({ prompt, items }) => {
                     {item.title}
                   </span>
                   {item.badge && (
-                    <span className="whitespace-nowrap rounded-md border border-orange-400/50 px-2.5 py-1 font-mono text-[10px] tracking-wider text-orange-300 sm:text-xs">
+                    <span
+                      className={[
+                        "whitespace-nowrap rounded-md border px-2.5 py-1 font-mono text-[10px] tracking-wider sm:text-xs",
+                        item.badgeTone === "cyan"
+                          ? "border-cyan-400/50 text-cyan-300"
+                          : "border-orange-400/50 text-orange-300",
+                      ].join(" ")}
+                    >
                       {item.badge}
                     </span>
                   )}
@@ -143,6 +201,8 @@ const CommandPalette: React.FC<Props> = ({ prompt, items }) => {
           </span>
         </div>
         <span>{items.length} results</span>
+      </div>
+      </div>
       </div>
     </div>
   );
