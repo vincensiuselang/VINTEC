@@ -22,7 +22,7 @@ To build the project for production, use the following command:
 npm run build
 ```
 
-The production files will be located in the `dist` directory.
+The production files will be located in the `public_html` directory (upload its contents to Hostinger `public_html`).
 
 ### Preview
 

@@ -43,7 +43,7 @@ Catatan: browser yang pernah login ke /admin otomatis gak dihitung lagi, jadi te
 npm run build
 ```
 
-1. Upload semua isi folder `dist` ke `public_html`, termasuk `admin.html` dan `.htaccess`.
+1. Hasil build ada di folder `public_html` (di dalam folder project). Upload semua isinya ke `public_html` di Hostinger, termasuk `admin.html` dan `.htaccess`.
 2. `.htaccess` itu file tersembunyi. Di File Manager Hostinger, nyalain **Show hidden files** dulu biar keliatan.
 3. Kalau di `public_html` udah ada `.htaccess`, jangan ditimpa. Tambahin isinya aja ke file yang lama.
 

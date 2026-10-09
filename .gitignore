@@ -1,5 +1,6 @@
 node_modules
 dist
+public_html
 .vercel
 .env
 .DS_Store

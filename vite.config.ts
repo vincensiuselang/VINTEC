@@ -38,6 +38,10 @@ export default defineConfig({
   // dua halaman: website utama + /admin.
   // Library Supabase cuma ikut ke bundle admin, jadi halaman utama tetap enteng.
   build: {
+    // hasil build langsung masuk ke public_html/, isinya tinggal di-upload ke
+    // public_html di Hostinger. Folder ini dikosongin & diisi ulang tiap build.
+    outDir: "public_html",
+    emptyOutDir: true,
     rollupOptions: {
       input: {
         main: path.resolve(__dirname, "index.html"),
