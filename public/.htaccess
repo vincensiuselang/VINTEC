@@ -3,3 +3,12 @@
 Options -MultiViews
 RewriteEngine On
 RewriteRule ^admin/?$ admin.html [L]
+
+# HTML selalu dicek ulang ke server, biar pengunjung (termasuk in-app browser
+# TikTok) gak nyangkut di versi lama yang belum ada tracker-nya.
+# File JS/CSS di /assets namanya ada kode hash, jadi tetap aman di-cache lama.
+<IfModule mod_headers.c>
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+</IfModule>

@@ -183,3 +183,26 @@ grant execute on function public.admin_stats(timestamptz, timestamptz) to authen
 
 -- langsung suruh API baca ulang daftar fungsi
 notify pgrst, 'reload schema';
+
+-- ---------------------------------------------------------------------
+-- 4. Realtime: dashboard dapet notifikasi tiap ada event baru
+--    Admin boleh BACA tabel events (orang lain tetap 0 baris karena RLS),
+--    dan tabelnya didaftarin ke publikasi realtime Supabase.
+-- ---------------------------------------------------------------------
+grant select on public.events to authenticated;
+
+drop policy if exists "admin bisa baca event" on public.events;
+create policy "admin bisa baca event"
+  on public.events for select
+  to authenticated
+  using (public.is_admin());
+
+do $$
+begin
+  alter publication supabase_realtime add table public.events;
+exception
+  when duplicate_object then null;  -- udah kedaftar, aman
+  when undefined_object then null;  -- bukan di Supabase (tes lokal)
+end $$;
+
+notify pgrst, 'reload schema';

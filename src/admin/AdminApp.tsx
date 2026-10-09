@@ -31,8 +31,15 @@ interface RecentEvent {
   visitor: string;
 }
 
-/** dashboard ambil data ulang otomatis tiap segini (selama tab-nya lagi dibuka) */
-const LIVE_INTERVAL_MS = 10_000;
+/**
+ * Realtime: Supabase ngabarin dashboard tiap ada event baru, terus angka diambil
+ * ulang. Polling tetap jalan sebagai cadangan kalau koneksi realtime putus:
+ * jarang (30 dtk) kalau realtime nyambung, rapat (10 dtk) kalau enggak.
+ */
+const POLL_BACKUP_MS = 30_000;
+const POLL_FALLBACK_MS = 10_000;
+/** jeda kecil biar 5 event beruntun = 1 kali ambil data, bukan 5 */
+const REALTIME_DEBOUNCE_MS = 600;
 
 type RangeKey = "today" | "7d" | "30d" | "90d";
 const RANGES: { key: RangeKey; label: string; days: number }[] = [
@@ -287,18 +294,36 @@ function Dashboard({ session }: { session: Session }) {
     load();
   }, [load]);
 
-  // LIVE: refresh otomatis selama tab dibuka, dan langsung refresh pas tab dibuka lagi
+  // REALTIME: dengerin INSERT di tabel events lewat Supabase Realtime
+  const [realtime, setRealtime] = useState(false);
+  useEffect(() => {
+    if (!supabase) return;
+    let timer: number | undefined;
+    const channel = supabase
+      .channel("events-live")
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "events" }, () => {
+        window.clearTimeout(timer);
+        timer = window.setTimeout(() => load(true), REALTIME_DEBOUNCE_MS);
+      })
+      .subscribe((status) => setRealtime(status === "SUBSCRIBED"));
+    return () => {
+      window.clearTimeout(timer);
+      supabase?.removeChannel(channel);
+    };
+  }, [load]);
+
+  // cadangan: polling selama tab dibuka, dan langsung refresh pas tab dibuka lagi
   useEffect(() => {
     const tick = () => {
       if (document.visibilityState === "visible") load(true);
     };
-    const id = window.setInterval(tick, LIVE_INTERVAL_MS);
+    const id = window.setInterval(tick, realtime ? POLL_BACKUP_MS : POLL_FALLBACK_MS);
     document.addEventListener("visibilitychange", tick);
     return () => {
       window.clearInterval(id);
       document.removeEventListener("visibilitychange", tick);
     };
-  }, [load]);
+  }, [load, realtime]);
 
   const toggleIgnore = () => {
     const next = !ignored;
@@ -352,7 +377,7 @@ function Dashboard({ session }: { session: Session }) {
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60 motion-reduce:animate-none" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
             </span>
-            live · update{" "}
+            {realtime ? "realtime" : "live tiap 10 dtk"} · update{" "}
             {updatedAt.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit" })} WIB
           </span>
         )}
@@ -809,7 +834,7 @@ function RecentFeed({ events }: { events: RecentEvent[] }) {
     <Card className="mt-6">
       <SectionTitle
         title="Aktivitas terbaru"
-        hint="20 kunjungan & klik terakhir, gak ikut filter tanggal. Ke-update sendiri tiap 10 detik."
+        hint="20 kunjungan & klik terakhir, gak ikut filter tanggal. Langsung muncul begitu ada yang buka atau klik."
       />
       {events.length === 0 ? (
         <p className="text-sm text-slate-500">
