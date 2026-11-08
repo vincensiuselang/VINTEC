@@ -1,5 +1,5 @@
 import React from "react";
-import vintecLogo from "/public/logovintec2.jpg";
+import vintecLogo from "/public/vintec-logo.svg";
 
 /**
  * Blok kode di hero.
@@ -66,10 +66,12 @@ const Hero: React.FC<Props> = ({ name, role, taglines }) => (
   <section className="flex flex-col items-center text-center">
     {/* logo */}
     <div className="relative">
-      <div className="absolute inset-0 rounded-[28px] bg-blue-400/25 blur-2xl" />
-      <div className="relative flex h-24 w-24 items-center justify-center rounded-[22px] bg-white p-3 shadow-2xl shadow-black/40 sm:h-32 sm:w-32 sm:rounded-[28px] sm:p-4">
-        <img src={vintecLogo} alt={name} className="h-full w-full object-contain" />
-      </div>
+      <div className="absolute inset-0 rounded-[28px] bg-gradient-to-br from-blue-500/40 to-cyan-400/40 blur-2xl" />
+      <img
+        src={vintecLogo}
+        alt={name}
+        className="relative h-24 w-24 rounded-[22px] shadow-2xl shadow-black/40 ring-1 ring-white/10 sm:h-32 sm:w-32 sm:rounded-[28px]"
+      />
     </div>
 
     <h1 className="mt-6 text-4xl font-bold tracking-tight text-white sm:mt-8 sm:text-6xl">

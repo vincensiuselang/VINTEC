@@ -1,141 +1,48 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#060d16">
-    <link rel="icon" type="image/jpeg" href="/logovintec2.jpg">
+    <link rel="icon" type="image/svg+xml" href="/vintec-logo.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="/favicon-64.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="canonical" href="https://vintec.tech/">
 
     <!-- Primary Meta Tags -->
-    <title>Vintec | AI & Tech Education - Learn Machine Learning & AI</title>
-    <meta name="title" content="Vintec | AI & Tech Education - Learn Machine Learning & AI">
-    <meta name="description" content="Vintec offers premium AI and Tech education. Learn Machine Learning from scratch with our modules, projects, and e-courses. Build your AI career today with practical, project-based learning.">
-    <meta name="keywords" content="Vintec, AI education, Machine Learning course, tech learning, data science projects, learn coding, AI products, digital education, ML from zero, programming tutorials">
+    <title>Vintec | Belajar AI & Machine Learning dari Nol</title>
+    <meta name="title" content="Vintec | Belajar AI & Machine Learning dari Nol">
+    <meta name="description" content="Belajar Machine Learning & AI dari dasar sampai bisa. Materi praktis, project real, dan e-course dari Vintec.">
+    <meta name="keywords" content="Vintec, belajar machine learning, belajar AI, kursus AI, e-course machine learning, deep learning, data science, project ML">
     <meta name="author" content="Vintec">
     <meta name="robots" content="index, follow">
 
-    <!-- Open Graph / Facebook -->
+    <!-- Open Graph (WhatsApp, Facebook, Instagram, LinkedIn) -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://lynk.id/bantucoding">
-    <meta property="og:title" content="Vintec | AI & Tech Education">
-    <meta property="og:description" content="Learn Machine Learning from zero to professional. Project-based AI modules and e-courses.">
-    <meta property="og:image" content="https://i.ibb.co/v4S8W8G/vintec-logo.png">
+    <meta property="og:site_name" content="Vintec">
+    <meta property="og:locale" content="id_ID">
+    <meta property="og:url" content="https://vintec.tech/">
+    <meta property="og:title" content="Vintec | Belajar AI & Machine Learning dari Nol">
+    <meta property="og:description" content="Materi praktis, project real, dan e-course ML & AI. Dari dasar sampai bisa.">
+    <meta property="og:image" content="https://vintec.tech/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Vintec — Belajar AI & Machine Learning">
 
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://lynk.id/bantucoding">
-    <meta property="twitter:title" content="Vintec | AI & Tech Education">
-    <meta property="twitter:description" content="Learn Machine Learning from zero to professional. Project-based AI modules and e-courses.">
-    <meta property="twitter:image" content="https://i.ibb.co/v4S8W8G/vintec-logo.png">
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Vintec | Belajar AI & Machine Learning dari Nol">
+    <meta name="twitter:description" content="Materi praktis, project real, dan e-course ML & AI. Dari dasar sampai bisa.">
+    <meta name="twitter:image" content="https://vintec.tech/og-image.png">
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        apple: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Text"', '"SF Pro Display"', '"Helvetica Neue"', 'Arial', 'sans-serif'],
-                    },
-                    keyframes: {
-                        'glow-pulse': {
-                            '0%, 100%': { opacity: '0.4', transform: 'scale(1)' },
-                            '50%': { opacity: '0.7', transform: 'scale(1.1)' },
-                        },
-                        'shimmer': {
-                            '0%': { transform: 'translateX(-100%)' },
-                            '100%': { transform: 'translateX(100%)' }
-                        },
-                        'border-glow': {
-                            '0%, 100%': { 'border-color': 'rgba(59, 130, 246, 0.4)', 'box-shadow': '0 0 10px rgba(59, 130, 246, 0.2)' },
-                            '50%': { 'border-color': 'rgba(59, 130, 246, 0.8)', 'box-shadow': '0 0 25px rgba(59, 130, 246, 0.6)' }
-                        },
-                        'scroll-code': {
-                            '0%': { transform: 'translateY(0)' },
-                            '100%': { transform: 'translateY(-50%)' }
-                        },
-                        'float': {
-                            '0%, 100%': { transform: 'translateY(0) rotate(0deg)' },
-                            '50%': { transform: 'translateY(-18px) rotate(4deg)' }
-                        }
-                    },
-                    animation: {
-                        'glow-pulse': 'glow-pulse 4s ease-in-out infinite',
-                        'shimmer': 'shimmer 2.5s infinite linear',
-                        'active-glow': 'border-glow 1s ease-in-out infinite',
-                        'scroll-code': 'scroll-code 40s linear infinite',
-                        'float': 'float 9s ease-in-out infinite'
-                    }
-                }
-            }
-        }
-    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(0, 0, 0, 0.05);
-        }
-        .dark .glass-card {
-            background: rgba(15, 23, 42, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .highlight-glow {
-            position: relative;
-        }
-        .highlight-glow::before {
-            content: '';
-            position: absolute;
-            inset: -2px;
-            background: linear-gradient(45deg, #3b82f6, #60a5fa, #3b82f6);
-            background-size: 400%;
-            z-index: -1;
-            filter: blur(8px);
-            border-radius: 20px;
-            animation: move-glow 8s linear infinite;
-            opacity: 0.6;
-        }
-        .dark .highlight-glow::before {
-            background: linear-gradient(45deg, #1e40af, #3b82f6, #1e40af);
-            filter: blur(12px);
-            opacity: 0.8;
-        }
-        @keyframes move-glow {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .active-hold-glow:active {
-            border-color: #3b82f6 !important;
-            box-shadow: 0 0 25px rgba(59, 130, 246, 0.4), inset 0 0 10px rgba(59, 130, 246, 0.2) !important;
-        }
-        .dark .active-hold-glow:active {
-            box-shadow: 0 0 35px rgba(59, 130, 246, 0.9), inset 0 0 15px rgba(59, 130, 246, 0.5) !important;
-        }
-
-        .code-animation-overlay {
-            mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
-            -webkit-mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
-        }
-        .font-mono, code, kbd {
-            font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
-        }
-    </style>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body class="bg-[#060d16] text-white selection:bg-blue-500/30 overflow-x-hidden">
     <div id="root"></div>
-<script type="module" src="/index.tsx"></script>
+    <script type="module" src="/index.tsx"></script>
 </body>
 </html>

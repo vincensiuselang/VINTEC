@@ -1,7 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { LinkItem } from "../../types";
+import { formatRupiah } from "../lib/promo";
+import { trackClick } from "../lib/tracking";
 import lynkIdLogo from "/public/lynkidlogo.png";
 import shopeeLogo from "/public/shopee-seeklogo.png";
+import vintecLogo from "/public/vintec-logo.svg";
 
 const WhatsappGlyph = () => (
   <svg viewBox="0 0 24 24" fill="currentColor" className="h-8 w-8 text-white">
@@ -9,12 +12,91 @@ const WhatsappGlyph = () => (
   </svg>
 );
 
+/** badge promo merah — diatur dari halaman /admin */
+export const PromoBadge: React.FC<{ text: string }> = ({ text }) => (
+  <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md bg-gradient-to-r from-rose-500 to-pink-500 px-2.5 py-1 font-mono text-[10px] font-bold tracking-wider text-white shadow-lg shadow-rose-500/30 sm:text-xs">
+    <span className="relative flex h-1.5 w-1.5">
+      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />
+      <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-white" />
+    </span>
+    {text}
+  </span>
+);
+
+const pad = (n: number) => String(n).padStart(2, "0");
+
+/** hitung mundur sampai `endsAt`. Manggil onExpire sekali pas waktunya habis. */
+export const Countdown: React.FC<{ endsAt: string; onExpire?: () => void }> = ({
+  endsAt,
+  onExpire,
+}) => {
+  const end = new Date(endsAt).getTime();
+  const [now, setNow] = useState(Date.now());
+
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  const left = Math.max(0, end - now);
+  useEffect(() => {
+    if (left === 0) onExpire?.();
+  }, [left === 0]);
+
+  const s = Math.floor(left / 1000);
+  const d = Math.floor(s / 86400);
+  const clock = `${pad(Math.floor((s % 86400) / 3600))}:${pad(Math.floor((s % 3600) / 60))}:${pad(s % 60)}`;
+
+  return (
+    <span className="whitespace-nowrap tabular-nums text-rose-300">
+      ⏱ berakhir {d > 0 ? `${d} hari ` : ""}
+      {clock}
+    </span>
+  );
+};
+
+/** baris harga coret + hitung mundur di bawah judul tombol */
+export const PromoDetails: React.FC<{
+  promo: NonNullable<LinkItem["promo"]>;
+  onExpire?: () => void;
+}> = ({ promo, onExpire }) => {
+  const hasPrice = promo.pricePromo != null;
+  const hasStrike = promo.priceNormal != null && (!hasPrice || promo.priceNormal > promo.pricePromo!);
+  if (!hasPrice && !hasStrike && !promo.endsAt) return null;
+
+  return (
+    <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-xs sm:text-sm">
+      {hasStrike && (
+        <span className="text-slate-500 line-through decoration-rose-400/70">
+          {formatRupiah(promo.priceNormal!)}
+        </span>
+      )}
+      {hasPrice && (
+        <span className="text-sm font-bold text-emerald-300 sm:text-base">
+          {formatRupiah(promo.pricePromo!)}
+        </span>
+      )}
+      {promo.endsAt && <Countdown endsAt={promo.endsAt} onExpire={onExpire} />}
+    </div>
+  );
+};
+
 const ItemIcon: React.FC<{ icon?: LinkItem["icon"] }> = ({ icon }) => {
   if (icon === "whatsapp") {
     return (
       <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#25D366] shadow-lg shadow-emerald-500/20 sm:h-14 sm:w-14">
         <WhatsappGlyph />
       </div>
+    );
+  }
+
+  if (icon === "website") {
+    return (
+      <img
+        src={vintecLogo}
+        alt=""
+        className="h-12 w-12 shrink-0 rounded-2xl shadow-lg shadow-cyan-500/20 ring-1 ring-white/10 sm:h-14 sm:w-14"
+      />
     );
   }
 
@@ -29,15 +111,19 @@ const ItemIcon: React.FC<{ icon?: LinkItem["icon"] }> = ({ icon }) => {
 interface Props {
   prompt: string;
   items: LinkItem[];
+  /** dipanggil pas hitung mundur promo suatu tombol habis */
+  onPromoExpire?: (linkId: string) => void;
 }
 
-const CommandPalette: React.FC<Props> = ({ prompt, items }) => {
+const CommandPalette: React.FC<Props> = ({ prompt, items, onPromoExpire }) => {
   const [active, setActive] = useState(0);
   const rowRefs = useRef<Array<HTMLAnchorElement | null>>([]);
 
   const open = (index: number) => {
     const item = items[index];
-    if (item) window.open(item.url, "_blank", "noopener,noreferrer");
+    if (!item) return;
+    trackClick(item.id);
+    window.open(item.url, "_blank", "noopener,noreferrer");
   };
 
   useEffect(() => {
@@ -82,6 +168,8 @@ const CommandPalette: React.FC<Props> = ({ prompt, items }) => {
               href={item.url}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => trackClick(item.id)}
+              onAuxClick={(e) => e.button === 1 && trackClick(item.id)}
               onMouseEnter={() => setActive(i)}
               onFocus={() => setActive(i)}
               className={[
@@ -109,16 +197,20 @@ const CommandPalette: React.FC<Props> = ({ prompt, items }) => {
                       {item.badge}
                     </span>
                   )}
+                  {item.promo && <PromoBadge text={item.promo.badge} />}
                 </div>
                 {item.subtitle && (
                   <p
                     className={[
-                      "mt-1 truncate font-mono text-xs sm:text-sm",
+                      "mt-1 line-clamp-2 font-mono text-xs sm:line-clamp-1 sm:text-sm",
                       isActive ? "text-emerald-400" : "text-slate-500",
                     ].join(" ")}
                   >
                     {item.subtitle}
                   </p>
+                )}
+                {item.promo && (
+                  <PromoDetails promo={item.promo} onExpire={() => onPromoExpire?.(item.id)} />
                 )}
               </div>
 

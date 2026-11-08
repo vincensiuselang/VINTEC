@@ -1,5 +1,4 @@
 import React from "react";
-import { motion } from "framer-motion";
 import { SocialLink } from "../../types";
 import {
   TwitterIcon,
@@ -87,17 +86,16 @@ const SocialIcons: React.FC<SocialIconsProps> = ({ socials }) => {
   return (
     <div className="flex justify-center gap-6 mt-10 pb-6">
       {socials.map((social) => (
-        <motion.a
+        <a
           key={social.platform}
           href={social.url}
           target="_blank"
           rel="noopener noreferrer"
           aria-label={social.platform}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
+          className="transition-transform duration-150 hover:scale-110 active:scale-90"
         >
           {renderIcon(social.platform)}
-        </motion.a>
+        </a>
       ))}
     </div>
   );
